@@ -1,559 +1,517 @@
 import streamlit as st
+import pandas as pd
 
-# ---------- PAGE SETTINGS ----------
+# ---------------- PAGE SETUP ----------------
 st.set_page_config(
     page_title="BhuRakshak",
-    page_icon="⛰️",
+    page_icon="🌧️",
     layout="wide"
 )
 
-# ---------- CUSTOM DESIGN ----------
+# ---------------- STYLE ----------------
 st.markdown("""
 <style>
 .main {
-    background-color: #f5f8f7;
+    background-color: #f5f7fa;
 }
 
 .hero {
-    padding: 35px;
-    border-radius: 20px;
-    background: linear-gradient(135deg, #063b35, #0b6658);
+    padding: 30px;
+    border-radius: 18px;
+    background: linear-gradient(135deg, #12372A, #436850);
     color: white;
     margin-bottom: 25px;
 }
 
 .hero h1 {
-    font-size: 48px;
+    font-size: 42px;
     margin-bottom: 5px;
 }
 
-.hero p {
-    font-size: 20px;
-}
-
 .card {
-    background: white;
     padding: 22px;
     border-radius: 16px;
+    background: white;
+    border: 1px solid #e5e7eb;
     margin-bottom: 15px;
-    box-shadow: 0 3px 12px rgba(0,0,0,0.08);
 }
 
-.risk {
-    background: #fff3cd;
-    padding: 25px;
-    border-radius: 16px;
-    text-align: center;
+.risk-low {
+    padding: 18px;
+    border-radius: 14px;
+    background: #e8f5e9;
+    font-size: 22px;
+    font-weight: bold;
 }
 
-.footer {
-    text-align: center;
-    padding: 25px;
-    color: #666;
+.risk-moderate {
+    padding: 18px;
+    border-radius: 14px;
+    background: #fff8e1;
+    font-size: 22px;
+    font-weight: bold;
+}
+
+.risk-high {
+    padding: 18px;
+    border-radius: 14px;
+    background: #fff3e0;
+    font-size: 22px;
+    font-weight: bold;
+}
+
+.risk-critical {
+    padding: 18px;
+    border-radius: 14px;
+    background: #ffebee;
+    font-size: 22px;
+    font-weight: bold;
+}
+
+.small {
+    color: #667085;
+    font-size: 14px;
 }
 </style>
 """, unsafe_allow_html=True)
 
-# ---------- SIDEBAR ----------
-st.sidebar.title("⛰️ BhuRakshak")
-st.sidebar.caption("Predict. Prepare. Protect.")
+# ---------------- SESSION ----------------
+if "page" not in st.session_state:
+    st.session_state.page = "Home"
 
-page = st.sidebar.radio(
-    "Navigation",
-    [
-        "🏠 Home",
-        "🗺️ Live Risk Map",
-        "🤖 Risk Prediction",
-        "🚨 Alerts",
-        "📍 Check My Risk",
-        "🟢 Safe Zones",
-        "📝 Report Incident",
-        "🤖 BhuRakshak AI",
-        "👨‍💼 Authority Dashboard",
-        "ℹ️ About"
-    ]
-)
+def go_to(page):
+    st.session_state.page = page
 
-st.sidebar.divider()
+# ---------------- HEADER ----------------
+st.markdown("""
+<div class="hero">
+    <h1>🌧️ BhuRakshak</h1>
+    <h3>AI-Based Landslide Early Warning & Risk Monitoring System</h3>
+    <p>Predict. Prepare. Protect.</p>
+</div>
+""", unsafe_allow_html=True)
 
-st.sidebar.info(
-    "Prototype Mode\n\n"
-    "Data shown in this version is demonstration data."
-)
+# ---------------- NAVIGATION ----------------
+nav = st.columns(6)
 
-# ---------- HOME ----------
-if page == "🏠 Home":
+with nav[0]:
+    if st.button("🏠 Home", use_container_width=True):
+        go_to("Home")
 
-    st.markdown("""
-    <div class="hero">
-        <h1>⛰️ BhuRakshak</h1>
-        <h3>Predict. Prepare. Protect.</h3>
-        <p>
-        AI-Based Early Warning & Landslide Risk Monitoring
-        System for the North Eastern Region of India.
-        </p>
-    </div>
-    """, unsafe_allow_html=True)
+with nav[1]:
+    if st.button("🗺️ Risk Map", use_container_width=True):
+        go_to("Risk Map")
+
+with nav[2]:
+    if st.button("🤖 Risk Prediction", use_container_width=True):
+        go_to("Risk Prediction")
+
+with nav[3]:
+    if st.button("🚨 Alerts", use_container_width=True):
+        go_to("Alerts")
+
+with nav[4]:
+    if st.button("🏥 Safe Zones", use_container_width=True):
+        go_to("Safe Zones")
+
+with nav[5]:
+    if st.button("📊 Dashboard", use_container_width=True):
+        go_to("Dashboard")
+
+st.divider()
+
+# =====================================================
+# HOME
+# =====================================================
+
+if st.session_state.page == "Home":
+
+    st.subheader("Know the Risk. Get Warned. Stay Safe.")
+
+    st.write(
+        "BhuRakshak combines rainfall, terrain, historical landslide "
+        "information and other risk factors to provide location-based "
+        "landslide risk information."
+    )
+
+    st.markdown("### 🚀 Quick Actions")
+
+    c1, c2, c3 = st.columns(3)
+
+    with c1:
+        st.markdown("""
+        <div class="card">
+        <h3>🗺️ Live Risk Map</h3>
+        <p>Explore landslide-prone locations across the North Eastern Region.</p>
+        </div>
+        """, unsafe_allow_html=True)
+
+        if st.button("Open Risk Map →", key="map_home",
+                     use_container_width=True):
+            go_to("Risk Map")
+
+    with c2:
+        st.markdown("""
+        <div class="card">
+        <h3>🤖 Check My Risk</h3>
+        <p>Enter environmental conditions and calculate a prototype risk score.</p>
+        </div>
+        """, unsafe_allow_html=True)
+
+        if st.button("Check Risk →", key="risk_home",
+                     use_container_width=True):
+            go_to("Risk Prediction")
+
+    with c3:
+        st.markdown("""
+        <div class="card">
+        <h3>🚨 Emergency Alerts</h3>
+        <p>View high-risk locations and recommended safety actions.</p>
+        </div>
+        """, unsafe_allow_html=True)
+
+        if st.button("View Alerts →", key="alert_home",
+                     use_container_width=True):
+            go_to("Alerts")
+
+    st.markdown("### 📊 System Overview")
+
+    a, b, c, d = st.columns(4)
+
+    a.metric("Monitored Zones", "24")
+    b.metric("High Risk Zones", "7")
+    c.metric("Active Alerts", "3")
+    d.metric("Safe Zones", "18")
+
+    st.markdown("### ⚙️ How BhuRakshak Works")
+
+    p1, p2, p3, p4 = st.columns(4)
+
+    p1.info("1️⃣ DATA\n\nRainfall, terrain and historical data")
+    p2.info("2️⃣ AI ENGINE\n\nAnalyse multiple risk factors")
+    p3.warning("3️⃣ RISK SCORE\n\nLOW → MODERATE → HIGH → CRITICAL")
+    p4.success("4️⃣ EARLY WARNING\n\nAlert communities and authorities")
+
+# =====================================================
+# RISK MAP
+# =====================================================
+
+elif st.session_state.page == "Risk Map":
+
+    st.subheader("🗺️ Live Landslide Risk Map")
+
+    st.write("Prototype demonstration data for North Eastern Region.")
+
+    locations = pd.DataFrame({
+        "Location": [
+            "Shillong",
+            "Cherrapunji",
+            "Aizawl",
+            "Gangtok",
+            "Itanagar",
+            "Kohima",
+            "Imphal",
+            "Agartala"
+        ],
+        "lat": [
+            25.5788, 25.2841, 23.7271, 27.3389,
+            27.0844, 25.6751, 24.8170, 23.8315
+        ],
+        "lon": [
+            91.8933, 91.7210, 92.7176, 88.6065,
+            93.6053, 94.1086, 93.9368, 91.2868
+        ],
+        "Risk Score": [72, 84, 67, 78, 55, 81, 48, 32],
+        "Risk": [
+            "HIGH",
+            "CRITICAL",
+            "HIGH",
+            "HIGH",
+            "MODERATE",
+            "CRITICAL",
+            "MODERATE",
+            "LOW"
+        ]
+    })
+
+    st.dataframe(
+        locations[["Location", "Risk", "Risk Score"]],
+        use_container_width=True,
+        hide_index=True
+    )
+
+    st.markdown("### 📍 Geographic View")
+
+    st.map(
+        locations.rename(columns={"lat": "latitude", "lon": "longitude"}),
+        latitude="latitude",
+        longitude="longitude",
+        size=100
+    )
+
+    st.caption(
+        "⚠️ Prototype/demo data. Real-time GIS and satellite integrations "
+        "can be connected in the next development stage."
+    )
+
+# =====================================================
+# RISK PREDICTION
+# =====================================================
+
+elif st.session_state.page == "Risk Prediction":
+
+    st.subheader("🤖 AI Risk Prediction")
+
+    st.write(
+        "Adjust the environmental conditions below to simulate "
+        "landslide-risk assessment."
+    )
 
     col1, col2 = st.columns(2)
 
     with col1:
-        if st.button("🗺️ View Live Risk Map", use_container_width=True):
-            st.info("Use the Live Risk Map section from the sidebar.")
+
+        rainfall = st.slider(
+            "🌧️ Rainfall intensity (mm)",
+            0, 250, 60
+        )
+
+        soil = st.slider(
+            "💧 Soil moisture (%)",
+            0, 100, 40
+        )
+
+        slope = st.slider(
+            "⛰️ Slope angle (°)",
+            0, 60, 25
+        )
 
     with col2:
-        if st.button("📍 Check My Area Risk", use_container_width=True):
-            st.info("Use the Check My Risk section from the sidebar.")
 
-    st.subheader("📊 BhuRakshak at a Glance")
-
-    c1, c2, c3, c4 = st.columns(4)
-
-    c1.metric("Monitoring", "24/7")
-    c2.metric("AI Risk Analysis", "Active")
-    c3.metric("Active Alerts", "7")
-    c4.metric("Reports", "143")
-
-    st.subheader("🛡️ How BhuRakshak Protects Communities")
-
-    a, b, c, d = st.columns(4)
-
-    with a:
-        st.markdown("""
-        <div class="card">
-        <h3>1. 📡 Collect</h3>
-        Rainfall, soil moisture, terrain, satellite and historical data.
-        </div>
-        """, unsafe_allow_html=True)
-
-    with b:
-        st.markdown("""
-        <div class="card">
-        <h3>2. 🧠 Analyse</h3>
-        AI/ML models analyse environmental conditions.
-        </div>
-        """, unsafe_allow_html=True)
-
-    with c:
-        st.markdown("""
-        <div class="card">
-        <h3>3. 📊 Predict</h3>
-        Generate location-based landslide risk scores.
-        </div>
-        """, unsafe_allow_html=True)
-
-    with d:
-        st.markdown("""
-        <div class="card">
-        <h3>4. 🚨 Alert</h3>
-        Provide early warnings when risk becomes critical.
-        </div>
-        """, unsafe_allow_html=True)
-
-    st.subheader("🌏 North Eastern Region")
-
-    st.write(
-        "BhuRakshak is designed to support landslide risk monitoring "
-        "across the North Eastern Region of India."
-    )
-
-# ---------- LIVE RISK MAP ----------
-elif page == "🗺️ Live Risk Map":
-
-    st.title("🗺️ Live Risk Map")
-    st.caption("Prototype GIS visualization using demonstration data.")
-
-    location = st.selectbox(
-        "Select Region",
-        [
-            "Meghalaya",
-            "Sikkim",
-            "Arunachal Pradesh",
-            "Assam",
-            "Nagaland",
-            "Manipur",
-            "Mizoram",
-            "Tripura"
-        ]
-    )
-
-    st.map(
-        {
-            "lat": [25.4670],
-            "lon": [91.3662]
-        },
-        zoom=6
-    )
-
-    st.subheader(f"📍 Risk Information — {location}")
-
-    c1, c2, c3, c4 = st.columns(4)
-
-    c1.metric("Risk Score", "78/100")
-    c2.metric("Risk Level", "HIGH")
-    c3.metric("Rainfall", "112 mm")
-    c4.metric("Slope", "38°")
-
-    st.warning(
-        "⚠️ Prototype warning: Heavy rainfall combined with "
-        "steep terrain may increase landslide risk."
-    )
-
-    st.info(
-        "Demo data only. Production deployment will integrate "
-        "verified geographical and environmental datasets."
-    )
-
-# ---------- RISK PREDICTION ----------
-elif page == "🤖 Risk Prediction":
-
-    st.title("🤖 AI Risk Prediction Engine")
-
-    st.write(
-        "BhuRakshak estimates landslide risk by combining "
-        "environmental and geographical indicators."
-    )
-
-    st.divider()
-
-    rainfall = st.slider(
-        "🌧️ Rainfall",
-        0, 300, 120
-    )
-
-    soil = st.slider(
-        "💧 Soil Moisture",
-        0, 100, 70
-    )
-
-    slope = st.slider(
-        "⛰️ Slope Angle",
-        0, 60, 30
-    )
-
-    historical = st.slider(
-        "📚 Historical Landslide Risk",
-        0, 100, 65
-    )
-
-    terrain = st.slider(
-        "🪨 Terrain Instability",
-        0, 100, 60
-    )
-
-    # Prototype weighted risk calculation
-    rainfall_score = min(rainfall / 3, 100)
-
-    risk = (
-        rainfall_score * 0.30
-        + soil * 0.25
-        + (slope / 60 * 100) * 0.20
-        + historical * 0.15
-        + terrain * 0.10
-    )
-
-    risk = round(risk)
-
-    st.divider()
-
-    if risk < 30:
-        level = "LOW"
-        st.success(f"🟢 RISK LEVEL: {level}")
-    elif risk < 50:
-        level = "MODERATE"
-        st.warning(f"🟡 RISK LEVEL: {level}")
-    elif risk < 75:
-        level = "HIGH"
-        st.warning(f"🟠 RISK LEVEL: {level}")
-    else:
-        level = "CRITICAL"
-        st.error(f"🔴 RISK LEVEL: {level}")
-
-    st.metric("AI Risk Score", f"{risk}/100")
-
-    st.subheader("Risk Factors")
-
-    st.progress(min(rainfall_score / 100, 1.0))
-    st.write(f"Rainfall: {round(rainfall_score)}%")
-
-    st.progress(soil / 100)
-    st.write(f"Soil Moisture: {soil}%")
-
-    st.progress(slope / 60)
-    st.write(f"Slope: {slope}°")
-
-    st.progress(historical / 100)
-    st.write(f"Historical Risk: {historical}%")
-
-    st.progress(terrain / 100)
-    st.write(f"Terrain Instability: {terrain}%")
-
-    if risk >= 75:
-        st.error(
-            "🚨 EARLY WARNING: Critical landslide risk detected. "
-            "Follow official safety instructions and move away "
-            "from unstable slopes."
+        historical = st.slider(
+            "📚 Historical landslide risk (%)",
+            0, 100, 30
         )
 
-    st.caption(
-        "Prototype/Simulation: This demonstration uses a transparent "
-        "weighted-risk algorithm. It is not a production prediction model."
-    )
-
-# ---------- ALERTS ----------
-elif page == "🚨 Alerts":
-
-    st.title("🚨 Early Warning & Alerts")
-
-    st.error(
-        "🔴 CRITICAL ALERT\n\n"
-        "High landslide risk detected in a monitored zone."
-    )
-
-    st.subheader("Active Alerts")
-
-    st.markdown("""
-    **🔴 Critical — Meghalaya**  
-    Heavy rainfall + high soil moisture + steep terrain.
-
-    **🟠 High — Sikkim**  
-    Elevated rainfall and historical landslide susceptibility.
-
-    **🟡 Moderate — Arunachal Pradesh**  
-    Increased rainfall conditions being monitored.
-    """)
-
-    st.subheader("📢 Alert Channels")
-
-    c1, c2, c3, c4 = st.columns(4)
-
-    c1.info("📱 SMS")
-    c2.info("🔔 Mobile Notification")
-    c3.info("🌐 Web Notification")
-    c4.info("🏢 Authority Dashboard")
-
-# ---------- CHECK MY RISK ----------
-elif page == "📍 Check My Risk":
-
-    st.title("📍 Check My Area Risk")
-
-    st.write(
-        "Enter your area information to view the prototype risk assessment."
-    )
-
-    location = st.selectbox(
-        "Select your location",
-        ["Meghalaya", "Sikkim", "Assam", "Arunachal Pradesh"]
-    )
-
-    if st.button("🔍 Check Risk", use_container_width=True):
-
-        st.error("🔴 HIGH RISK")
-
-        st.metric("Risk Score", "78/100")
-
-        st.subheader("Why is the risk high?")
-
-        st.write("🌧️ Heavy rainfall")
-        st.write("💧 High soil moisture")
-        st.write("⛰️ Steep slope")
-        st.write("📚 Historical landslide activity")
-
-        st.warning(
-            "Stay away from steep slopes and drainage channels. "
-            "Keep emergency supplies ready and follow official "
-            "evacuation instructions."
+        terrain = st.slider(
+            "🛰️ Terrain / satellite indicator (%)",
+            0, 100, 30
         )
 
-        c1, c2 = st.columns(2)
+    # Weighted prototype algorithm
+    rainfall_score = min(rainfall / 250 * 100, 100)
+    soil_score = soil
+    slope_score = min(slope / 60 * 100, 100)
 
-        c1.button("🟢 Find Safe Zone")
-        c2.button("🗺️ View Full Analysis")
+    risk_score = (
+        rainfall_score * 0.30 +
+        soil_score * 0.25 +
+        slope_score * 0.20 +
+        historical * 0.15 +
+        terrain * 0.10
+    )
 
-# ---------- SAFE ZONES ----------
-elif page == "🟢 Safe Zones":
+    risk_score = round(risk_score, 1)
 
-    st.title("🟢 Find Safe Places")
-
-    st.write("Prototype safe-zone database.")
-
-    places = [
-        ("🏫 Relief Shelter — Meghalaya", "Capacity: 250", "OPEN"),
-        ("🏥 District Hospital", "Emergency services available", "OPEN"),
-        ("🏢 Emergency Centre", "Capacity: 100", "OPEN"),
-        ("🚓 Police Station", "Emergency assistance", "OPEN")
-    ]
-
-    for name, info, status in places:
+    if risk_score < 30:
+        risk = "LOW"
         st.markdown(
-            f"""
-            <div class="card">
-            <h3>{name}</h3>
-            <p>{info}</p>
-            <b>Status: 🟢 {status}</b>
-            </div>
-            """,
+            f'<div class="risk-low">🟢 LOW RISK — {risk_score}%</div>',
             unsafe_allow_html=True
         )
 
-    st.button("📍 Find Nearest Safe Zone")
-
-# ---------- REPORT INCIDENT ----------
-elif page == "📝 Report Incident":
-
-    st.title("📝 Report an Incident")
-
-    incident = st.selectbox(
-        "Incident Type",
-        [
-            "Landslide",
-            "Road blockage",
-            "Slope crack",
-            "Soil movement",
-            "Flash flood",
-            "Fallen trees",
-            "Infrastructure damage"
-        ]
-    )
-
-    description = st.text_area("Describe the incident")
-
-    severity = st.select_slider(
-        "Severity",
-        options=["Low", "Moderate", "High", "Critical"]
-    )
-
-    uploaded = st.file_uploader(
-        "📷 Upload Photograph",
-        type=["jpg", "jpeg", "png"]
-    )
-
-    if st.button("🚨 Submit Report", use_container_width=True):
-
-        st.success("✅ Report Successfully Submitted")
-
-        st.info(
-            "Incident ID: BRK-2026-00421\n\n"
-            "The report has been added to the prototype incident system."
+    elif risk_score < 50:
+        risk = "MODERATE"
+        st.markdown(
+            f'<div class="risk-moderate">🟡 MODERATE RISK — {risk_score}%</div>',
+            unsafe_allow_html=True
         )
 
-# ---------- AI ASSISTANT ----------
-elif page == "🤖 BhuRakshak AI":
+    elif risk_score < 75:
+        risk = "HIGH"
+        st.markdown(
+            f'<div class="risk-high">🟠 HIGH RISK — {risk_score}%</div>',
+            unsafe_allow_html=True
+        )
 
-    st.title("🤖 BhuRakshak AI")
+    else:
+        risk = "CRITICAL"
+        st.markdown(
+            f'<div class="risk-critical">🔴 CRITICAL RISK — {risk_score}%</div>',
+            unsafe_allow_html=True
+        )
 
-    st.caption("Your disaster safety assistant")
+    st.markdown("### 📊 Risk Factors")
 
-    question = st.text_input(
-        "Ask a disaster-safety question"
+    f1, f2, f3, f4, f5 = st.columns(5)
+
+    f1.metric("Rainfall", f"{rainfall} mm")
+    f2.metric("Soil Moisture", f"{soil}%")
+    f3.metric("Slope", f"{slope}°")
+    f4.metric("Historical", f"{historical}%")
+    f5.metric("Terrain", f"{terrain}%")
+
+    st.markdown("### 🧠 Why this risk level?")
+
+    if rainfall > 150:
+        st.write("🌧️ Heavy rainfall is significantly increasing the risk.")
+
+    if soil > 70:
+        st.write("💧 High soil moisture may reduce slope stability.")
+
+    if slope > 40:
+        st.write("⛰️ Steep terrain increases landslide susceptibility.")
+
+    if historical > 60:
+        st.write("📚 Historical landslide activity increases the risk.")
+
+    if risk_score < 50:
+        st.success("Current conditions indicate comparatively lower risk.")
+
+    elif risk_score < 75:
+        st.warning("Precaution and monitoring are recommended.")
+
+    else:
+        st.error(
+            "🚨 Critical conditions detected. Early warning action is recommended."
+        )
+
+    st.caption(
+        "Prototype: weighted risk algorithm used for demonstration. "
+        "A trained ML model can replace this module in future."
     )
 
-    if st.button("Ask BhuRakshak AI"):
+# =====================================================
+# ALERTS
+# =====================================================
 
-        if question:
-            st.info(
-                "For immediate safety: move away from steep or unstable "
-                "slopes, avoid flowing water and follow instructions "
-                "from local emergency authorities."
-            )
+elif st.session_state.page == "Alerts":
 
-            st.caption(
-                "Prototype AI Assistant. Location-specific live "
-                "information requires verified emergency databases."
-            )
-        else:
-            st.warning("Please enter a question.")
+    st.subheader("🚨 Early Warning Alerts")
 
-# ---------- AUTHORITY DASHBOARD ----------
-elif page == "👨‍💼 Authority Dashboard":
-
-    st.title("👨‍💼 Authority Dashboard")
-
-    c1, c2, c3 = st.columns(3)
-
-    c1.metric("Critical Zones", "12")
-    c2.metric("High-Risk Zones", "28")
-    c3.metric("Active Alerts", "7")
-
-    c4, c5, c6 = st.columns(3)
-
-    c4.metric("Reported Incidents", "143")
-    c5.metric("Blocked Roads", "9")
-    c6.metric("People Potentially Affected", "18,450")
-
-    st.subheader("Priority Monitoring")
-
-    st.dataframe(
-        {
-            "Location": [
-                "Meghalaya Zone A",
-                "Sikkim Zone B",
-                "Arunachal Zone C"
-            ],
-            "Risk": [
-                "CRITICAL",
-                "HIGH",
-                "MODERATE"
-            ],
-            "Population": [
-                "4,200",
-                "2,800",
-                "1,900"
-            ],
-            "Road Status": [
-                "Blocked",
-                "Caution",
-                "Open"
-            ]
-        },
-        use_container_width=True
+    st.error(
+        "🔴 CRITICAL — Cherrapunji\n\n"
+        "Heavy rainfall + steep terrain + historical landslide risk."
     )
 
-# ---------- ABOUT ----------
-elif page == "ℹ️ About":
+    st.warning(
+        "🟠 HIGH — Shillong\n\n"
+        "Rainfall conditions are increasing landslide risk."
+    )
 
-    st.title("ℹ️ About BhuRakshak")
+    st.warning(
+        "🟠 HIGH — Gangtok\n\n"
+        "Slope and historical risk indicators are elevated."
+    )
 
-    st.markdown("""
-    ### BhuRakshak
-    **Predict. Prepare. Protect.**
-
-    BhuRakshak is a prototype AI-based early warning and
-    landslide risk monitoring platform designed for the
-    North Eastern Region of India.
-
-    ### System Architecture
-
-    🌧️ Rainfall  
-    ↓  
-    💧 Soil Moisture  
-    ↓  
-    🛰️ Satellite Information  
-    ↓  
-    ⛰️ Terrain & Slope  
-    ↓  
-    📚 Historical Landslide Data  
-    ↓  
-    🤖 AI/ML Risk Engine  
-    ↓  
-    📊 Risk Score  
-    ↓  
-    🗺️ GIS Visualization  
-    ↓  
-    🚨 Early Warning  
-    ↓  
-    👨‍💼 Authorities + 👥 Communities
-    """)
+    st.markdown("### 🛡️ Recommended Actions")
 
     st.info(
-        "This is an SIH prototype. Demonstration data and "
-        "simulated predictions are clearly separated from "
-        "future verified live-data integrations."
+        "• Avoid unnecessary travel through high-risk slopes.\n"
+        "• Follow official evacuation instructions.\n"
+        "• Move towards designated safe zones if instructed.\n"
+        "• Report new cracks, debris flow or slope movement."
     )
 
-# ---------- FOOTER ----------
-st.markdown("""
-<div class="footer">
-BhuRakshak • Predict. Prepare. Protect. • SIH 2026 Prototype
-</div>
-""", unsafe_allow_html=True)
+# =====================================================
+# SAFE ZONES
+# =====================================================
+
+elif st.session_state.page == "Safe Zones":
+
+    st.subheader("🏥 Safe Zones & Emergency Centres")
+
+    safezones = pd.DataFrame({
+        "Place": [
+            "Shillong Emergency Shelter",
+            "Cherrapunji Community Centre",
+            "Aizawl Safe Shelter",
+            "Gangtok Emergency Centre"
+        ],
+        "Type": [
+            "Shelter",
+            "Community Centre",
+            "Shelter",
+            "Emergency Centre"
+        ],
+        "Capacity": [
+            "250 people",
+            "180 people",
+            "220 people",
+            "150 people"
+        ],
+        "Status": [
+            "Open",
+            "Open",
+            "Available",
+            "Open"
+        ]
+    })
+
+    st.dataframe(
+        safezones,
+        use_container_width=True,
+        hide_index=True
+    )
+
+    st.success(
+        "📍 In a real deployment, the nearest safe zone would be "
+        "recommended using the user's approximate location."
+    )
+
+# =====================================================
+# AUTHORITY DASHBOARD
+# =====================================================
+
+elif st.session_state.page == "Dashboard":
+
+    st.subheader("👨‍💼 Authority Dashboard")
+
+    a, b, c, d = st.columns(4)
+
+    a.metric("Critical Zones", "3")
+    b.metric("High Risk Zones", "7")
+    c.metric("Active Alerts", "3")
+    d.metric("Incident Reports", "12")
+
+    st.markdown("### 📈 Risk Monitoring")
+
+    chart = pd.DataFrame({
+        "Risk Level": ["Low", "Moderate", "High", "Critical"],
+        "Zones": [8, 6, 7, 3]
+    })
+
+    st.bar_chart(
+        chart.set_index("Risk Level")
+    )
+
+    st.markdown("### 🚧 Road Status")
+
+    roads = pd.DataFrame({
+        "Road": [
+            "Shillong–Cherrapunji Road",
+            "Aizawl–Lunglei Road",
+            "Gangtok–North Sikkim Road",
+            "Kohima–Dimapur Road"
+        ],
+        "Status": [
+            "⚠️ Caution",
+            "🟢 Open",
+            "🔴 Blocked",
+            "🟢 Open"
+        ]
+    })
+
+    st.dataframe(
+        roads,
+        use_container_width=True,
+        hide_index=True
+    )
+
+# ---------------- FOOTER ----------------
+
+st.divider()
+
+st.caption(
+    "BhuRakshak • Predict. Prepare. Protect. • SIH 2026 Prototype"
+)
